@@ -51,3 +51,26 @@ Project updated for evaluation
 ### Update
 Evaluation trigger update
 Improve README with LPI tools and setup instructions
+## Architecture
+
+The Digital Twin Advisor Agent processes user queries and retrieves relevant knowledge using LPI tools.
+
+User Question  
+↓  
+Digital Twin Advisor Agent  
+↓  
+LPI Tool Calls  
+• query_knowledge  
+• get_case_studies  
+• get_insights  
+↓  
+Processing & Reasoning (SMILE methodology)  
+↓  
+Recommendation Output
+## Example Workflow
+
+1. User asks a Digital Twin question.
+2. The agent queries LPI knowledge tools.
+3. Relevant case studies and insights are retrieved.
+4. The agent applies SMILE methodology reasoning.
+5. A practical recommendation is returned to the user.

@@ -9,29 +9,30 @@ An AI-style advisor that helps plan Digital Twin implementations using the SMILE
 - Generates recommendations for digital twin deployment
 
 ## LPI Tools Used
-The agent uses the following LPI sandbox tools:
 
-- query_knowledge
-- get_case_studies
-- get_insights
+This agent queries the LPI knowledge base using the following tools:
+
+- query_knowledge – retrieves digital twin knowledge entries
+- get_case_studies – retrieves real-world digital twin case studies
+- get_insights – provides implementation insights and recommendations
 
 These tools allow the agent to gather expert knowledge and generate recommendations.
 
 ## Setup Instructions
 
-Clone the repository:
+1. Clone the repository
 
-git clone https://github.com/psinghaditya/digital-twin-advisor-agent-Adi.git
+git clone https://github.com/psinghaditya/digital-twin-advisor-agent-Adi
 
-Go into the project folder:
+2. Navigate into the folder
 
 cd digital-twin-advisor-agent-Adi
 
-Install dependencies:
+3. Install dependencies
 
 npm install
 
-Run the agent:
+4. Run the agent
 
 npm start
 
@@ -40,11 +41,13 @@ Example input:
 smart building digital twin
 
 ## Error Handling
-The agent checks for invalid or empty input.  
-If the user provides no query or an unsupported question, the system asks the user to enter a valid digital twin query.
+
+The agent validates user input before querying LPI tools.
+If the user provides empty or invalid input, the agent returns a helpful message instead of failing.
 
 ## Author
 Aditya Pratap Singh
 Project updated for evaluation
 ### Update
 Evaluation trigger update
+Improve README with LPI tools and setup instructions

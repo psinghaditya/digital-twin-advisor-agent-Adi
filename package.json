@@ -1,0 +1,21 @@
+{
+  "name": "digital-twin-advisor-agent-adi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "agent.js",
+  "scripts": {
+  "start": "node example.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psinghaditya/digital-twin-advisor-agent-Adi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/psinghaditya/digital-twin-advisor-agent-Adi/issues"
+  },
+  "homepage": "https://github.com/psinghaditya/digital-twin-advisor-agent-Adi#readme"
+}

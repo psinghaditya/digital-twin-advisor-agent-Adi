@@ -1,17 +1,23 @@
 {
   "name": "digital-twin-advisor-agent-adi",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI Digital Twin Advisor Agent using LPI MCP tools and the SMILE methodology.",
   "main": "agent.js",
   "scripts": {
-  "start": "node example.js"
-},
+    "start": "node example.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/psinghaditya/digital-twin-advisor-agent-Adi.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ai-agent",
+    "digital-twin",
+    "mcp",
+    "lpi-tools",
+    "smile-methodology"
+  ],
+  "author": "Aditya Pratap Singh",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {

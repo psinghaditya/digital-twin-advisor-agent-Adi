@@ -1,90 +1,82 @@
-\# How I Built the Digital Twin Advisor Agent
+# HOW_I_DID_IT
 
+## Project Overview
 
+I built a Digital Twin Advisor Agent that helps users understand how to implement digital twins using the SMILE methodology provided by the LPI sandbox.
 
-\## Overview
+The goal of the agent is to accept a user question about digital twins and provide recommendations by combining knowledge from multiple LPI tools.
 
+---
 
+## Step 1 — Setting up the LPI sandbox
 
-This project implements a Digital Twin Advisor Agent that helps users plan Digital Twin implementations using the SMILE methodology.
+First, I forked and cloned the LPI Developer Kit repository.
 
+I installed dependencies and built the sandbox:
 
+npm install
+npm run build
+npm run test-client
 
-The agent takes a user question and provides recommendations for implementing digital twin systems.
+The test client verified that all seven LPI tools were working correctly. This confirmed that the local MCP server was functioning.
 
+---
 
+## Step 2 — Running a local LLM
 
-\## LPI Tools Used
+I installed Ollama and experimented with running local models such as Gemma and Qwen.
 
+Running a local model helped me generate responses based on the data retrieved from the LPI tools.
 
+---
 
-The agent queries the following LPI tools:
+## Step 3 — Building the Agent
 
+The agent accepts a user question from the command line.
 
+It then queries multiple LPI tools:
 
-\- query\_knowledge
+- query_knowledge
+- get_case_studies
+- get_insights
 
-\- get\_case\_studies
+Each tool provides a different type of information:
 
-\- get\_insights
+- knowledge about the SMILE methodology
+- examples of real-world digital twin implementations
+- insights for practical implementation
 
+The agent combines these outputs and generates a recommendation for the user.
 
+---
 
-These tools provide:
+## Step 4 — Explainability
 
+One requirement of the challenge is explainable AI.
 
+To address this, the agent clearly shows:
 
-• technical knowledge  
+- which LPI tools were used
+- what data came from each tool
+- how the final recommendation was generated
 
-• real-world case studies  
+This allows the user to trace where the information came from.
 
-• expert insights
+---
 
+## Challenges I Faced
 
+The main challenge was understanding how MCP tool calls work and how to structure the agent so that it can combine outputs from multiple tools.
 
-\## Agent Workflow
+Another challenge was ensuring the agent remains simple while still demonstrating explainability.
 
+---
 
+## What I Would Improve
 
-1\. The user enters a digital twin question.
+If I extended this project further, I would:
 
-2\. The agent validates the input.
-
-3\. The agent calls LPI tools.
-
-4\. The agent combines knowledge and insights.
-
-5\. The agent generates recommendations.
-
-
-
-\## Error Handling
-
-
-
-The agent handles:
-
-
-
-\- empty user input
-
-\- tool failures
-
-\- unexpected responses
-
-
-
-If an error occurs, the agent prints a helpful message instead of crashing.
-
-
-
-\## Future Improvements
-
-
-
-\- connect to real LPI APIs
-
-\- add structured output
-
-\- add automated tests
-
+- connect directly to the MCP server for real-time tool calls
+- add structured outputs (JSON responses)
+- implement automated tests for reliability
+- add a small web interface for easier interaction

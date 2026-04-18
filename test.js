@@ -1,7 +1,21 @@
 const { runAgent } = require("./agent");
 
-console.log("Running Agent Tests...\n");
+async function runTest() {
 
-runAgent("smart building digital twin");
+  console.log("Running Agent Tests...\n");
 
-console.log("\nTest completed successfully.");
+  try {
+
+    await runAgent("smart building digital twin");
+
+    console.log("\nTest completed successfully.");
+
+  } catch (error) {
+
+    console.error("Test failed:", error);
+
+  }
+
+}
+
+runTest();

@@ -1,98 +1,216 @@
-const { execSync } = require("child_process");
+import readline from "readline";
+import { spawn } from "child_process";
 
-// LPI Tool: query_knowledge
-function query_knowledge(topic) {
-  try {
-    console.log("Calling LPI tool: query_knowledge");
+// ─────────────────────────────────────
+// Configuration
+// ─────────────────────────────────────
 
-    // Simulated call to LPI sandbox
-    const result = execSync(`echo Knowledge retrieved for "${topic}"`);
+const CONFIG = {
+  mcpPath: "../dist/src/index.js",
+  industry: "manufacturing",
+  timeout: 10000
+};
 
-    return result.toString().trim();
+// ─────────────────────────────────────
+// LPI MCP Tool Caller
+// ─────────────────────────────────────
 
-  } catch (error) {
-    return "Error retrieving knowledge from LPI.";
-  }
+function callLPITool(toolName, args) {
+
+  return new Promise((resolve, reject) => {
+
+    const payload = JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/call",
+      params: {
+        name: toolName,
+        arguments: args
+      }
+    });
+
+    const child = spawn("node", [CONFIG.mcpPath], {
+      stdio: ["pipe", "pipe", "pipe"]
+    });
+
+    let stdout = "";
+    let stderr = "";
+
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(`Tool ${toolName} timeout`);
+    }, CONFIG.timeout);
+
+    child.stdout.on("data", data => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on("data", data => {
+      stderr += data.toString();
+    });
+
+    child.on("close", code => {
+
+      clearTimeout(timer);
+
+      if (code !== 0) {
+        reject(stderr);
+      } else {
+        resolve(stdout);
+      }
+
+    });
+
+    child.stdin.write(payload);
+    child.stdin.end();
+
+  });
+
 }
 
-// LPI Tool: get_case_studies
-function get_case_studies(topic) {
-  try {
-    console.log("Calling LPI tool: get_case_studies");
+// ─────────────────────────────────────
+// Fetch LPI Context
+// ─────────────────────────────────────
 
-    const result = execSync(`echo Case study retrieved for "${topic}"`);
+async function fetchContext(question) {
 
-    return result.toString().trim();
+  const calls = [
+    ["query_knowledge", { query: question }],
+    ["get_case_studies", { industry: CONFIG.industry }],
+    ["get_insights", { scenario: question }]
+  ];
 
-  } catch (error) {
-    return "Error retrieving case studies from LPI.";
-  }
+  const results = await Promise.allSettled(
+
+    calls.map(([tool, args]) =>
+      callLPITool(tool, args)
+        .then(data => ({
+          tool,
+          data,
+          ok: true
+        }))
+    )
+
+  );
+
+  return results.map((r, i) => {
+
+    if (r.status === "fulfilled") return r.value;
+
+    return {
+      tool: calls[i][0],
+      data: "",
+      ok: false
+    };
+
+  });
+
 }
 
-// LPI Tool: get_insights
-function get_insights(topic) {
-  try {
-    console.log("Calling LPI tool: get_insights");
+// ─────────────────────────────────────
+// SMILE Recommendation Generator
+// ─────────────────────────────────────
 
-    const result = execSync(`echo Insights retrieved for "${topic}"`);
+function generateRecommendation(question, results) {
 
-    return result.toString().trim();
+  let context = "";
 
-  } catch (error) {
-    return "Error retrieving insights from LPI.";
-  }
-}
+  results.forEach(r => {
 
-// Main Agent Logic
-function runAgent(question) {
-
-  try {
-
-    // Input validation
-    if (!question || question.trim() === "") {
-      console.log("Error: Please enter a valid digital twin question.");
-      return;
+    if (r.ok) {
+      context += `\n${r.tool}:\n${r.data}\n`;
     }
 
-    console.log("\nUser Question:", question);
+  });
 
-    // Query LPI tools
-    const knowledge = query_knowledge(question);
-    const caseStudy = get_case_studies(question);
-    const insight = get_insights(question);
+  return `
+SMILE Digital Twin Recommendation
 
-    console.log("\nProcessing with SMILE methodology...\n");
+Simulate:
+Create a digital model of the real-world system relevant to "${question}".
 
-    // Combine tool outputs
-    const summary = `
-Sources Used:
-- query_knowledge
-- get_case_studies
-- get_insights
+Monitor:
+Use sensors and telemetry to collect real-time operational data.
 
-Knowledge:
-${knowledge}
+Integrate:
+Combine system data with enterprise systems and analytics pipelines.
 
-Case Study:
-${caseStudy}
+Learn:
+Apply machine learning and predictive analytics to detect patterns.
 
-Insight:
-${insight}
+Execute:
+Use insights to optimize operations and improve system performance.
+
+Context Used:
+${context}
 `;
-
-    console.log(summary);
-
-    // Recommendation
-    console.log("Agent Recommendation:");
-    console.log("1. Start with the SMILE Reality Emulation phase.");
-    console.log("2. Model the real-world system digitally.");
-    console.log("3. Use sensors to collect system data.");
-    console.log("4. Apply analytics to optimize system performance.");
-
-  } catch (error) {
-    console.log("Agent Error:", error.message);
-  }
 
 }
 
-module.exports = { runAgent };
+// ─────────────────────────────────────
+// Agent Workflow
+// ─────────────────────────────────────
+
+async function runAgent(question) {
+
+  const q = question.trim();
+
+  if (!q) {
+    console.log("Please enter a valid digital twin question.");
+    return;
+  }
+
+  console.log("\nUser Question:", q);
+
+  console.log("\nCalling LPI tools...\n");
+
+  const results = await fetchContext(q);
+
+  const success = results.filter(r => r.ok).length;
+
+  console.log(`Retrieved context from ${success}/3 tools\n`);
+
+  results.forEach(r => {
+
+    const icon = r.ok ? "✓" : "✗";
+
+    console.log(`${icon} ${r.tool}`);
+
+    if (r.ok) console.log(r.data);
+
+    console.log("");
+
+  });
+
+  const recommendation = generateRecommendation(q, results);
+
+  console.log("────────────────────────────");
+  console.log(recommendation);
+  console.log("────────────────────────────");
+
+}
+
+// ─────────────────────────────────────
+// CLI Interface
+// ─────────────────────────────────────
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question("Ask a digital twin question: ", async question => {
+
+  try {
+
+    await runAgent(question);
+
+  } catch (error) {
+
+    console.log("Agent error:", error);
+
+  }
+
+  rl.close();
+
+});
